@@ -26,6 +26,7 @@ const TopicTabs = () => {
 
   const handleCheckbox = async (id) => {
     try {
+      if (!id) return;
       await toggleProblemStatus(id).unwrap();
     } catch (err) {
       console.error('Toggle failed', err);
@@ -53,7 +54,7 @@ const TopicTabs = () => {
 
       {/* Accordion Section */}
       {topics.map((topic, index) => (
-        <div key={topic._id} className="mb-4 border rounded-xl shadow-md bg-white overflow-hidden">
+        <div key={topic._id || index} className="mb-4 border rounded-xl shadow-md bg-white overflow-hidden">
           <button
             className="w-full text-left px-6 py-5 bg-blue-100 font-semibold text-xl flex justify-between items-center"
             onClick={() => toggleAccordion(index)}
@@ -65,7 +66,7 @@ const TopicTabs = () => {
           {openTabs[index] && (
             <ul className="bg-white px-6 py-4 space-y-6">
               {topic.problems.map((q) => (
-                <li key={q._id} className="pb-4 border-b">
+                <li key={q._id || q.title} className="pb-4 border-b">
                   <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
                     <label className="flex items-center gap-3 text-base font-medium text-gray-800">
                       <input
@@ -78,7 +79,7 @@ const TopicTabs = () => {
                       <span className="text-sm text-gray-500">({q.level})</span>
                     </label>
                   </div>
-                  
+
 
                   {/* Links */}
                   <div className="mt-3 flex flex-wrap gap-3">
