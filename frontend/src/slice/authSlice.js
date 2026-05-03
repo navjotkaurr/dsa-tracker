@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+/* JSON.stringify: object -> string
+JSON.parse: string -> object */
+
+
+
 const initialState = {
   userInfo: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
