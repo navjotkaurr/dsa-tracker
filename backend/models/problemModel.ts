@@ -1,8 +1,9 @@
-import mongoose, { model, Schema } from "mongoose";
+import { model, Schema, Document } from "mongoose";
 
-const MODEL_NAME = 'Problem';
+export const DOCUMENT_NAME = 'Problem';
+export const COLLECTION_NAME = 'problems'
 
-interface Problem {
+export default interface Problem extends Document {
     title: string;
     youtubeLink?: string;
     leetCodeLink?: string;
@@ -43,6 +44,4 @@ const problemSchema =  new Schema<Problem>({
     timestamps: true,
 })
 
-const ProblemModel = model<Problem>(MODEL_NAME, problemSchema);
-
-export default ProblemModel;
+export const ProblemModel = model<Problem>(DOCUMENT_NAME, problemSchema, COLLECTION_NAME);
