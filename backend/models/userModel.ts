@@ -1,10 +1,11 @@
-import { Document, model, Schema } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export const DOCUMENT_NAME = 'User';
 export const COLLECTION_NAME = 'users';
 
 export default interface User extends Document {
+    _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
