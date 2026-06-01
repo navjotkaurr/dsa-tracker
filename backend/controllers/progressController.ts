@@ -1,6 +1,6 @@
-import { Request } from "express";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { UserProgressModel } from "../models/userProgressModel.js";
+
 
 
 const getMyProgress = asyncHandler(async(req, res) => {
@@ -16,7 +16,7 @@ const getMyProgress = asyncHandler(async(req, res) => {
 })
 
 //@desc    update progress of problem
-//@route   PATCH/api/topic/topic:Id/problems/:problemId
+//@route   PATCH/api/progress/:problemId
 //@access  private users only
 const markComplete = asyncHandler(async(req, res) => {
     const { problemId } = req.params;

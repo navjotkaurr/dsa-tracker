@@ -8,7 +8,6 @@ export const COLLECTION_NAME = 'topics'
 export default interface Topic extends Document {
     topicName: string;
     problems: Types.ObjectId[];
-    user: Types.ObjectId;
 
 }
 
@@ -22,12 +21,6 @@ const topicSchema = new Schema<Topic>({
         type: mongoose.Schema.Types.ObjectId,
         ref: PROBLEM_DOCUMENT_NAME,
     }],
-
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: USER_DOCUMENT_NAME,
-        required: true
-    }
 }, {
     timestamps: true,
     versionKey: false,

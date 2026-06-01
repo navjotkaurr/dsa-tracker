@@ -6,6 +6,8 @@ import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import topicRoutes from './routes/topicRoutes.js';
+import problemRoutes from './routes/problemRoutes.js';
+import progressRoutes from './routes/progressRoutes.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -13,6 +15,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
 const port = process.env.PORT || 5000;
 
 // For ES Module __dirname
@@ -27,6 +30,8 @@ app.use(cookieParser());
 // API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/topics', topicRoutes);
+app.use('/api/problems', problemRoutes);
+app.use('/api/progress', progressRoutes);
 
 // --- Add this to serve frontend in production ---
 if (process.env.NODE_ENV === 'production') {

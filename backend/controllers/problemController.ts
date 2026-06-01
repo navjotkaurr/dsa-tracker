@@ -8,7 +8,7 @@ import { TopicModel } from "../models/TopicModel.js";
 // @access public
 const getTopicProblems = asyncHandler( async(req, res) => {
     const { topicId } = req.params;
-
+ 
     const topic = await TopicModel.findById(topicId).populate('problems');
 
     if(!topic) {
@@ -24,7 +24,7 @@ const getTopicProblems = asyncHandler( async(req, res) => {
 // @route  POST /api/topics/:topicId/problems
 // @access private -> admin
 const addProblem = asyncHandler( async(req,res) => {
-    const {topicId  } = req.body;
+    const {topicId  } = req.params;
 
     const { 
         title,
@@ -46,7 +46,6 @@ const addProblem = asyncHandler( async(req,res) => {
         youtubeLink: youtubeLink || '',
         leetCodeLink: leetCodeLink || '',
         articleLink: articleLink || '',
-        isCompleted: false,
      });
 
      topic.problems.push(problem._id as Types.ObjectId);
@@ -100,7 +99,10 @@ const deleteProblem = asyncHandler(async(req,res) => {
     }
 
     // ---remove the problemId from topic's array
-
+    await TopicModel.updateOne(
+        { problems: problemId },
+        { $pull: { problems: problemId } }
+    )
 
     res.status(200).json({
         message: 'Problem deleted successfully'

@@ -1,8 +1,8 @@
 import express from "express";
 import {
     createTopic,
-    getAllTopic,
-    markProblemComplete,
+    deleteTopic,
+    getAllTopics,
 } from '../controllers/topicController.js'
 import { admin, protect } from "../middleware/authMiddleware.js";
 import { addProblem, getTopicProblems } from "../controllers/problemController.js";
@@ -13,13 +13,12 @@ const router = express.Router();
 router.post('/', protect, admin, createTopic)
 
 // Get all topics
-router.get('/', getAllTopic);
+router.get('/', getAllTopics);
 
+router.delete('/:topicId', protect, admin, deleteTopic);
+
+router.get('/:topicId/problems',  protect, getTopicProblems);
 router.post('/:topicId/problems', protect, admin, addProblem);
 
-router.get('/:topicId/problems', getTopicProblems);
-
-// Toggle a problem's status
-router.patch('/problem/:id', protect, markProblemComplete);
 
 export default router;

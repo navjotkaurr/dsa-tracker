@@ -4,8 +4,8 @@ import colors from 'colors';
 
 import connectDB from './config/db.js';
 
-import User from './models/userModel.js';
-import Topic from './models/TopicModel.js';
+import { UserModel } from './models/userModel.js';
+import { TopicModel } from './models/TopicModel.js';
 import users from './data/users.js';
 import topics from './data/topics.js';
 
@@ -14,10 +14,10 @@ connectDB();
 
 const importData = async () => {
   try {
-    await User.deleteMany();
-    await Topic.deleteMany();
+    await UserModel.deleteMany();
+    await TopicModel.deleteMany();
 
-    const createdUsers = await User.insertMany(users);
+    const createdUsers = await UserModel.insertMany(users);
     const adminUser = createdUsers[0]._id;
 
     const sampleTopics = topics.map(topic => ({
@@ -25,7 +25,7 @@ const importData = async () => {
       user: adminUser
     }));
 
-    await Topic.insertMany(sampleTopics);
+    await TopicModel.insertMany(sampleTopics);
 
     console.log('Data Imported!'.green.inverse);
     process.exit();
@@ -37,8 +37,8 @@ const importData = async () => {
 
 const destroyData = async () => {
   try {
-    await User.deleteMany();
-    await Topic.deleteMany();
+    await UserModel.deleteMany();
+    await TopicModel.deleteMany();
 
     console.log('Data Destroyed!'.red.inverse);
     process.exit();

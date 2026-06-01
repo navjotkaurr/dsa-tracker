@@ -1,4 +1,4 @@
-import { addProblem, deleteProblem, getTopicProblems, updateProblem } from "../controllers/problemController.js";
+import { deleteProblem, updateProblem } from "../controllers/problemController.js";
 import { admin, protect } from '../middleware/authMiddleware.js';
 import express  from "express";
 
