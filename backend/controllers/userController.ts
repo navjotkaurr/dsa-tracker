@@ -114,10 +114,37 @@ const updateUserProfile = asyncHandler(async(req, res) => {
 
 }) ;
 
+const uploadProfilePic = asyncHandler(async (req, res) => {
+  if(!req.file) {
+    res.status(400);
+    throw new Error('No file uploaded');
+  }
+
+  const profilePicUrl = req.file.path;
+
+  const user = await UserModel.findByIdAndUpdate(
+    req.user!._id,
+    { $set: { profilePicUrl } },
+    { new: true }
+  ).select('+email')
+
+  if(!user) {
+    res.status(404);
+    throw new Error('User not found')
+  }
+
+  res.status(200).json({
+    message: 'Profile picture uploaded',
+    profilePicUrl: user.profilePicUrl,
+  })
+
+})
+
 export {
   authUser,
   registerUser,
   logoutUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  uploadProfilePic
 };

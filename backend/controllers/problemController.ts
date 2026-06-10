@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { ProblemModel } from "../models/problemModel.js";
 import { TopicModel } from "../models/TopicModel.js";
+import redisClient from "../config/redis.js";
 
 // @desc   get a problem
 // @route  POST /api/topics/:topicId/problems?page=1&limit=10
@@ -76,6 +77,9 @@ const addProblem = asyncHandler( async(req,res) => {
      topic.problems.push(problem._id as Types.ObjectId);
      await topic.save();
 
+     await redisClient.del(`api/topics/${topicId}/problems`);
+     console.log(`Cache cleared: api/topics/${topicId}/problems`)
+
      res.status(201).json(problem);
 
 })
@@ -106,6 +110,14 @@ const updateProblem = asyncHandler(async(req, res) => {
         throw new Error('Problem not found')
     }
     
+    const topic = await TopicModel.findOne({ problems: problemId });
+
+    if(topic) {
+        await redisClient.del(`api/topics/${topic._id}/problems`);
+        console.log(`Cache cleared: /api/topics/${topic._id}/problems`);
+
+    }
+    
     res.status(200).json(problem);
 
 });
@@ -123,11 +135,16 @@ const deleteProblem = asyncHandler(async(req,res) => {
         throw new Error('Problem not found');
     }
 
-    // ---remove the problemId from topic's array
-    await TopicModel.updateOne(
+    const topic = await TopicModel.findOneAndUpdate(
         { problems: problemId },
-        { $pull: { problems: problemId } }
-    )
+        { $pull: {problems: problemId} },
+        { new: true }
+    );
+
+    if(topic) {
+        await redisClient.del(`/api/topics/${topic._id}/problems`);
+        console.log(`Cache cleared: /api/topics/${topic._id}/problems`);
+    }
 
     res.status(200).json({
         message: 'Problem deleted successfully'

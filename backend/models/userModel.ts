@@ -10,6 +10,7 @@ export default interface User extends Document {
     email: string;
     password: string;
     isAdmin: boolean;
+    profilePicUrl?: string
     matchPassword(enteredPassword: string): Promise<boolean>
 }
 
@@ -36,6 +37,10 @@ const userSchema = new Schema<User>({
         type: Boolean,
         required: true,
         default: false,
+    },
+    profilePicUrl : {
+        type: String,
+        default: "",
     }
 }, {
     timestamps: true,

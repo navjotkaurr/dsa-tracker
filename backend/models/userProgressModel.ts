@@ -36,5 +36,9 @@ progressSchema.index(
     { unique: true }
 );
 
+progressSchema.index({
+    user: 1,
+    isCompleted: 1
+})
 
 export const UserProgressModel = model<UserProgress>(DOCUMENT_NAME, progressSchema, COLLECTION_NAME);

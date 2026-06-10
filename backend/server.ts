@@ -1,8 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import path from 'path';
 import express from 'express';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import connectDB from './config/db.js';
+import cors from 'cors';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import topicRoutes from './routes/topicRoutes.js';
@@ -10,8 +12,11 @@ import problemRoutes from './routes/problemRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { apiLimiter } from './middleware/rateLimiter.js';
+import './config/redis.js';
+import connectDB from './config/db.js';
+import helmet from 'helmet';
 
-dotenv.config();
 connectDB();
 
 const app = express();
@@ -23,9 +28,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Middleware
+app.use(cors({
+  origin: [
+    process.env.FRONTEND_URL as string,
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+}));
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use('/api', apiLimiter);
 
 // API Routes
 app.use('/api/users', userRoutes);
