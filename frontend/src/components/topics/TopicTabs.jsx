@@ -1,19 +1,31 @@
 import { useState } from 'react';
-import { useGetTopicsQuery, useToggleProblemStatusMutation } from '../../slice/topicApiSlice';
+import { useGetTopicProblemQuery, useGetTopicsQuery } from '../../slice/topicApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../slice/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useMarkCompleteMutation } from '../../slice/progressApiSlice';
 
 const TopicTabs = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { userInfo } = useSelector((state) => state.auth);
-  const [openTabs, setOpenTabs] = useState({});
+  const [openTab, setOpenTab] = useState(null);
 
-  const { data: topics = [], isLoading } = useGetTopicsQuery();
-  const [toggleProblemStatus] = useToggleProblemStatusMutation();
+  const { data, isLoading } = useGetTopicsQuery();
+  const topics = data?.topics || [];
+  console.log('Topics:', topics);
+
+  const [selectedTopicId, setSelectedTopicId] = useState(null);
+  console.log('selectedTopicId: ', selectedTopicId);
+
+  const { data: problemData, isLoading: getTopicProblemLoading }  = useGetTopicProblemQuery(selectedTopicId, {skip: !selectedTopicId, } );
+  const problems = problemData?.problems;
+  console.log('problemData:',problemData);
+  console.log('problems:',problems);
+  
+  const [markComplete] = useMarkCompleteMutation();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,13 +33,13 @@ const TopicTabs = () => {
   };
 
   const toggleAccordion = (index) => {
-    setOpenTabs((prev) => ({ ...prev, [index]: !prev[index] }));
+    setOpenTab((prev) => (prev === index ? null : index));
   };
 
   const handleCheckbox = async (id) => {
     try {
       if (!id) return;
-      await toggleProblemStatus(id).unwrap();
+      await markComplete(id).unwrap();
     } catch (err) {
       console.error('Toggle failed', err);
     }
@@ -57,15 +69,23 @@ const TopicTabs = () => {
         <div key={topic._id || index} className="mb-4 border rounded-xl shadow-md bg-white overflow-hidden">
           <button
             className="w-full text-left px-6 py-5 bg-blue-100 font-semibold text-xl flex justify-between items-center"
-            onClick={() => toggleAccordion(index)}
-          >
+            onClick={() => {
+              console.log(topic._id);
+              setSelectedTopicId(topic._id)
+              toggleAccordion(index)
+            }}
+            >
             <span>{topic.topicName}</span>
-            {openTabs[index] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+           {openTab === index ? (
+             <ChevronUp className="w-5 h-5" />
+              ) : (
+             <ChevronDown className="w-5 h-5" />
+              )}
           </button>
 
-          {openTabs[index] && (
+          {openTab === index && (
             <ul className="bg-white px-6 py-4 space-y-6">
-              {topic.problems.map((q) => (
+              {problems?.map((q) => (
                 <li key={q._id || q.title} className="pb-4 border-b">
                   <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
                     <label className="flex items-center gap-3 text-base font-medium text-gray-800">
